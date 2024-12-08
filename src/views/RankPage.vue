@@ -2,15 +2,13 @@
     <ion-page>
         <ion-header :translucent="true">
             <ion-toolbar>
-                <ion-title>Crypto Data</ion-title>
+                <ion-title>Rank Page</ion-title>
             </ion-toolbar>
         </ion-header>
 
         <ion-content :fullscreen="true">
-            <ion-button expand="block" class="ion-margin" @click="getData">Get Data</ion-button>
-
-            <ion-button expand="block" class="ion-margin" routerLink="/rank">
-                Go to Rank Page
+            <ion-button expand="block" class="ion-margin" @click="getData">
+                Refresh Rankings
             </ion-button>
 
             <ion-list>
@@ -18,21 +16,21 @@
                     <ion-label>
                         <ion-grid>
                             <ion-row>
+                                <ion-col size="3">Rank</ion-col>
                                 <ion-col size="4">Name</ion-col>
-                                <ion-col size="4">Symbol</ion-col>
-                                <ion-col size="4">Harga USD</ion-col>
+                                <ion-col size="5">Harga USD</ion-col>
                             </ion-row>
                         </ion-grid>
                     </ion-label>
                 </ion-item>
 
-                <ion-item v-for="crypto in cryptoData" :key="crypto.id">
+                <ion-item v-for="(crypto, index) in sortedCryptoData" :key="crypto.id">
                     <ion-label>
                         <ion-grid>
                             <ion-row>
+                                <ion-col size="3">#{{ index + 1 }}</ion-col>
                                 <ion-col size="4">{{ crypto.name }}</ion-col>
-                                <ion-col size="4">{{ crypto.symbol }}</ion-col>
-                                <ion-col size="4">${{ crypto.price_usd }}</ion-col>
+                                <ion-col size="5">${{ crypto.price_usd }}</ion-col>
                             </ion-row>
                         </ion-grid>
                     </ion-label>
@@ -57,11 +55,10 @@ import {
     IonRow,
     IonCol,
 } from "@ionic/vue";
-
 import axios from "axios";
 
 export default {
-    name: "HomePage",
+    name: "RankPage",
     components: {
         IonContent,
         IonHeader,
@@ -81,6 +78,11 @@ export default {
             cryptoData: [],
         };
     },
+    computed: {
+        sortedCryptoData() {
+            return [...this.cryptoData].sort((a, b) => b.price_usd - a.price_usd);
+        },
+    },
     methods: {
         async getData() {
             try {
@@ -88,13 +90,14 @@ export default {
                     "https://api.coinlore.net/api/tickers/"
                 );
 
-                this.cryptoData = response.data.data.filter((crypto) =>
-                    ["BTC", "ETH", "USDT", "BNB"].includes(crypto.symbol)
-                );
+                this.cryptoData = response.data.data;
             } catch (error) {
                 console.error("Error fetching data: ", error);
             }
         },
+    },
+    mounted() {
+        this.getData();
     },
 };
 </script>

@@ -1,2 +1,11 @@
 /* For information on how to create your own theme, please see:
 http://ionicframework.com/docs/theming/ */
+
+
+.img-wrapper {
+    min-height: 1px;
+    height: 100px;
+    width: 100px;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
